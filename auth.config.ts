@@ -17,6 +17,7 @@ declare module "next-auth" {
 }
 
 export const authConfig = {
+  trustHost: true,
   pages: {
     signIn: "/login",
   },
