@@ -1,0 +1,26 @@
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
+
+# Logs / SO
+*.log
+.DS_Store
+Thumbs.db
+
+# Uploads
+public/uploads/
+
+# Editor
+.vscode/
+.idea/

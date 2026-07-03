@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FIDELIZATE · Configuración de GHL</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1d212b; --line:#2a2f3a;
+    --ink:#e8eaf0; --muted:#9aa3b2; --pri:#e63946; --pri2:#c1121f;
+    --gold:#f1c453; --green:#2a9d8f; --blue:#4f86f7; --violet:#9b7bd4;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 80px}
+  h1{font-size:28px;margin:0 0 4px}
+  h2{font-size:20px;margin:40px 0 8px;display:flex;align-items:center;gap:10px}
+  h2 .n{background:var(--pri);color:#fff;width:26px;height:26px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;font-size:14px;flex:0 0 auto}
+  h3{font-size:15px;margin:18px 0 6px;color:var(--ink)}
+  p{color:var(--muted);margin:6px 0}
+  .sub{color:var(--muted);margin:0 0 8px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-top:12px}
+  .pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;
+    text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid var(--line)}
+  .pill.prog{color:var(--gold);border-color:#5a4a2a;background:#241f12}
+  .pill.rec{color:var(--blue);border-color:#26406e;background:#121a2b}
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+  code,.code{font-family:var(--mono);font-size:13px;background:var(--panel2);
+    border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:#dfe6f2}
+  .copy{cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--muted);
+    border-radius:6px;font-size:11px;padding:2px 8px;margin-left:6px}
+  .copy:hover{color:var(--ink);border-color:var(--pri)}
+  .tag{font-family:var(--mono);font-size:12px;color:#cdd6e6}
+  .two{color:var(--muted);font-size:14px}
+  /* Flow */
+  .flow{display:flex;flex-direction:column;align-items:stretch;gap:0;margin-top:14px}
+  .node{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--pri);
+    border-radius:10px;padding:12px 14px;position:relative}
+  .node .t{font-weight:700;font-size:14px;margin-bottom:2px}
+  .node .d{color:var(--muted);font-size:13px}
+  .node.trigger{border-left-color:var(--violet)}
+  .node.update{border-left-color:var(--gold)}
+  .node.branch{border-left-color:var(--blue)}
+  .node.wait{border-left-color:var(--green)}
+  .arrow{height:20px;width:2px;background:var(--line);margin:0 auto}
+  .kv{font-family:var(--mono);font-size:12.5px;color:#dbe3f1;background:#11141b;
+    border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:8px;white-space:pre-wrap}
+  .note{border-left:3px solid var(--gold);background:#1f1c12;color:#e9dcae;
+    padding:10px 12px;border-radius:8px;font-size:13px;margin-top:10px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr}}
+  .stage{display:flex;align-items:center;gap:8px;font-size:13px;margin:4px 0}
+  .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+  footer{margin-top:48px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:16px}
+  a{color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>FIDELIZATE · Configuración de GHL</h1>
+  <p class="sub">Guía para configurar campos personalizados y workflows en cada subcuenta. Hecha para copiar/pegar rápido.</p>
+
+  <!-- 0 -->
+  <h2><span class="n">0</span> Idea base: dos dimensiones</h2>
+  <div class="panel">
+    <div class="grid2">
+      <div>
+        <span class="pill prog">Progreso</span>
+        <p>En qué sello va el cliente. <b>La calcula FIDELIZATE</b> y la manda en cada compra. Sirve para "te falta 1", "premio listo".</p>
+      </div>
+      <div>
+        <span class="pill rec">Recencia</span>
+        <p>Cuántos días lleva sin comprar. <b>La maneja GHL</b> con temporizadores anclados a la fecha de última compra, que se reinician en cada compra.</p>
+      </div>
+    </div>
+    <div class="note">FIDELIZATE manda <b>valores absolutos</b> (no "suma 1"). GHL solo guarda y reacciona. Reenviar el mismo evento nunca rompe nada.</div>
+  </div>
+
+  <!-- 1 -->
+  <h2><span class="n">1</span> Campos personalizados a crear</h2>
+  <p class="sub">En la subcuenta: <b>Settings → Custom Fields → Add Field</b>. Crea estos (objeto: Contact).</p>
+  <div class="panel">
+    <table>
+      <thead><tr><th>Nombre</th><th>Tipo</th><th>Para qué</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag">loyalty_stamps</span><button class="copy" data-c="loyalty_stamps">copiar</button></td><td>Number</td><td>Sellos en la tarjeta actual (0–10)</td></tr>
+        <tr><td><span class="tag">loyalty_total</span><button class="copy" data-c="loyalty_total">copiar</button></td><td>Number</td><td>Compras históricas totales</td></tr>
+        <tr><td><span class="tag">loyalty_to_reward</span><button class="copy" data-c="loyalty_to_reward">copiar</button></td><td>Number</td><td>Sellos que faltan para el premio</td></tr>
+        <tr><td><span class="tag">loyalty_reward_ready</span><button class="copy" data-c="loyalty_reward_ready">copiar</button></td><td>Checkbox</td><td>Tarjeta completada (premio disponible)</td></tr>
+        <tr><td><span class="tag">loyalty_last_purchase</span><button class="copy" data-c="loyalty_last_purchase">copiar</button></td><td>Date</td><td>Fecha de última compra (ancla de recencia)</td></tr>
+        <tr><td><span class="tag">loyalty_stage</span><button class="copy" data-c="loyalty_stage">copiar</button></td><td>Single line / Dropdown</td><td>Etapa de progreso (NUEVO, EN_PROGRESO, CASI_PREMIO, PREMIO_LISTO)</td></tr>
+        <tr><td><span class="tag">rut</span><button class="copy" data-c="rut">copiar</button></td><td>Single line</td><td>RUT del cliente (identificador)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 2 -->
+  <h2><span class="n">2</span> Qué envía FIDELIZATE (payload) y a qué campo va</h2>
+  <div class="panel">
+    <div class="kv">{
+  "rut": "18.431.296-4",            → contacto: custom field rut + dedup
+  "name": "Mauricio",              → contacto: Name
+  "email": "cliente@correo.cl",    → contacto: Email
+  "phone": "+56912345678",         → contacto: Phone (llave de dedup)
+  "stampCount": 1,                 → loyalty_stamps
+  "previousStampCount": 0,         → (para mensajes "te falta 1")
+  "stampsToReward": 9,             → loyalty_to_reward
+  "totalPurchases": 1,             → loyalty_total
+  "lastPurchaseAt": "2026-...Z",   → loyalty_last_purchase
+  "rewardAt": 10,                  → (referencia)
+  "rewardTriggered": false,        → rama premio + loyalty_reward_ready
+  "isNewCustomer": true,           → rama bienvenida
+  "loyaltyStage": "NUEVO",         → loyalty_stage
+  "ghlContactId": ""               → (referencia, puede venir vacío)
+}</div>
+    <div class="note">En el workflow, estos valores se eligen del selector de variables del webhook. Aparecen como <code>{{inboundWebhookRequest.stampCount}}</code>, <code>{{inboundWebhookRequest.loyaltyStage}}</code>, etc.</div>
+  </div>
+
+  <!-- 3 -->
+  <h2><span class="n">3</span> Workflow 1 · "FIDELIZATE · Actualización de datos"</h2>
+  <p class="sub">Trigger: el Inbound Webhook (la compra). Procesa datos y manda solo 2 mensajes pagados: bienvenida (1ª) y premio.</p>
+  <div class="panel">
+    <div class="flow">
+      <div class="node trigger"><div class="t">① Trigger · Inbound Webhook</div><div class="d">El que ya creaste (.../webhook-trigger/8ed88bf8...). Reference payload mapeado.</div></div>
+      <div class="arrow"></div>
+      <div class="node"><div class="t">② Create / Update Contact (Upsert)</div><div class="d">Dedup por Phone. Registra/identifica el número.</div>
+        <div class="kv">Phone = {{inboundWebhookRequest.phone}}
+Email = {{inboundWebhookRequest.email}}
+Name  = {{inboundWebhookRequest.name}}
+rut   = {{inboundWebhookRequest.rut}}</div></div>
+      <div class="arrow"></div>
+      <div class="node update"><div class="t">③ Update Contact Field (5 campos)</div>
+        <div class="kv">loyalty_stamps        = {{inboundWebhookRequest.stampCount}}
+loyalty_total         = {{inboundWebhookRequest.totalPurchases}}
+loyalty_to_reward     = {{inboundWebhookRequest.stampsToReward}}
+loyalty_last_purchase = Current Date
+loyalty_stage         = {{inboundWebhookRequest.loyaltyStage}}</div></div>
+      <div class="arrow"></div>
+      <div class="node branch"><div class="t">④ If <code>isNewCustomer</code> = true → mensaje bienvenida</div><div class="d">Solo en la 1ª compra. (Mensaje pagado #1.)</div></div>
+      <div class="arrow"></div>
+      <div class="node branch"><div class="t">⑤ If <code>rewardTriggered</code> = true → premio</div>
+        <div class="d">Set <span class="tag">loyalty_reward_ready=true</span> · WhatsApp "tu premio está listo" · Add Tag <span class="tag">loyalty_reward_pending</span>. (Mensaje pagado #2, ~1 cada 10 compras.)</div></div>
+      <div class="arrow"></div>
+      <div class="node wait"><div class="t">⑥ Reinicia el seguimiento</div>
+        <div class="d"><b>Add to Workflow → "FIDELIZATE · Seguimientos"</b>. Eso saca al cliente del ciclo viejo de no-compra y reinicia el reloj (ver Workflow 2).</div></div>
+    </div>
+    <div class="note">La etapa vive en el campo <code>loyalty_stage</code> (valor único que se sobrescribe), así que NO se usan etiquetas de etapa: para filtrar o condicionar usa directo el valor del campo. El único tag es <span class="tag">loyalty_reward_pending</span> (premio sin canjear). Y NO hay mensajes por compra intermedia: actualizar campos es gratis, lo que cuesta es enviar.</div>
+  </div>
+
+  <!-- 4 -->
+  <h2><span class="n">4</span> Workflow 2 · "FIDELIZATE · Seguimientos" (no-compra)</h2>
+  <p class="sub">Los recordatorios por inactividad. Una compra (Workflow 1) lo reinicia.</p>
+  <div class="panel">
+    <p><b>Settings del workflow:</b> <span class="tag">Allow Re-Entry: ON</span> + <span class="tag">Remove from this workflow on re-entry: ON</span>. Trigger: se entra por el "Add to Workflow" del paso ⑦ (puedes dejar el trigger en un tag tipo <span class="tag">cliente-activo</span> o entrada manual; el alta real la hace Workflow 1).</p>
+    <div class="flow">
+      <div class="node wait"><div class="t">Wait 15 días → recordatorio + progreso</div><div class="d">"Te faltan {{contact.loyalty_to_reward}} sellos para tu premio."</div></div>
+      <div class="arrow"></div>
+      <div class="node wait"><div class="t">Wait hasta 30 días → "te extrañamos"</div></div>
+      <div class="arrow"></div>
+      <div class="node wait"><div class="t">Wait hasta 60 días → descuento de reactivación</div></div>
+      <div class="arrow"></div>
+      <div class="node wait"><div class="t">(opcional) 90 días → tag <span class="tag">lealtad-perdido</span></div></div>
+    </div>
+    <div class="note"><b>Punto crítico:</b> el reinicio se hace re-agregando a ESTE workflow (con Re-Entry on, GHL saca la instancia anterior y arranca de cero). <b>Nunca uses "remove from ALL workflows"</b> — eso apagaría también tus campañas de publicidad mensual. Al nombrar solo "FIDELIZATE · Seguimientos", la publicidad mensual (otros workflows) queda intacta.</div>
+  </div>
+
+  <!-- 5 -->
+  <h2><span class="n">5</span> Mapa de mensajes (optimizado por costo)</h2>
+  <div class="panel">
+    <table>
+      <thead><tr><th>Momento</th><th>¿Mensaje?</th><th>Frecuencia</th></tr></thead>
+      <tbody>
+        <tr><td>1ª compra (bienvenida)</td><td>Sí</td><td>1 vez</td></tr>
+        <tr><td>Compras intermedias</td><td><b>No</b></td><td>0 (era el gasto inútil)</td></tr>
+        <tr><td>Casi premio</td><td><b>No</b></td><td>0 (va en el follow-up)</td></tr>
+        <tr><td>Premio ganado</td><td>Sí</td><td>~1 cada 10 compras</td></tr>
+        <tr><td>15 / 30 / 60 días sin comprar</td><td>Sí</td><td>solo si se está yendo</td></tr>
+      </tbody>
+    </table>
+    <p class="two">Cliente fiel: ~80–160 CLP/ciclo (antes ~800 con mensaje por compra). El "te faltan X" viaja gratis dentro del mensaje de inactividad con <code>{{contact.loyalty_to_reward}}</code>.</p>
+    <hr style="border:none;border-top:1px solid var(--line);margin:14px 0">
+    <div class="stage"><span class="dot" style="background:var(--violet)"></span><b>Bienvenida (1ª compra)</b></div>
+    <p>"¡Bienvenido/a a [Negocio]! Ya tienes tu primer sello. Junta 10 y el último es gratis."</p>
+    <div class="stage"><span class="dot" style="background:var(--green)"></span><b>Premio listo</b></div>
+    <p>"¡Felicidades! Completaste tu tarjeta. Tu premio te espera, muéstralo en tu próxima visita."</p>
+    <div class="stage"><span class="dot" style="background:#888"></span><b>Inactividad (con progreso)</b></div>
+    <p>15d: "Hace un tiempo no te vemos por [Negocio]. Te faltan {{contact.loyalty_to_reward}} sellos para tu premio. ¡Te esperamos!"</p>
+    <p>30d: "Te extrañamos. Vuelve y sigue sumando para tu premio."</p>
+    <p>60d: "Tenemos algo para ti: [DESCUENTO]. Válido en tu próxima visita."</p>
+  </div>
+
+  <!-- 5b -->
+  <h2><span class="n">5b</span> Workflow 3 · "FIDELIZATE · Entrega de premio" (canje)</h2>
+  <p class="sub">Trigger: un 2º Inbound Webhook (distinto al de compra). Lo dispara el botón "Canjear premio" de la caja.</p>
+  <div class="panel">
+    <p>Payload que envía FIDELIZATE al canjear:</p>
+    <div class="kv">{
+  "event": "reward_redeemed",
+  "rut": "18.431.296-4",
+  "name": "Mauricio",
+  "phone": "+56983971952",
+  "rewardsRedeemed": 1,
+  "redeemedAt": "2026-...Z"
+}</div>
+    <div class="flow">
+      <div class="node trigger"><div class="t">① Trigger · Inbound Webhook (canje)</div><div class="d">URL .../webhook-trigger/a08a0a00... Reference payload mapeado.</div></div>
+      <div class="arrow"></div>
+      <div class="node"><div class="t">② Find/Update Contact</div><div class="d">Dedup por <code>{{inboundWebhookRequest.phone}}</code>.</div></div>
+      <div class="arrow"></div>
+      <div class="node update"><div class="t">③ Remove Tag</div><div class="d"><span class="tag">loyalty_reward_pending</span> · y Set <span class="tag">loyalty_reward_ready = false</span></div></div>
+      <div class="arrow"></div>
+      <div class="node branch"><div class="t">④ (opcional) Mensaje "gracias por canjear"</div><div class="d">"¡Disfruta tu premio! Empieza tu nueva tarjeta."</div></div>
+    </div>
+    <div class="note">El estado real del canje vive en FIDELIZATE (<code>rewardPending</code>, <code>rewardsRedeemed</code>). Este workflow solo limpia el tag en GHL y agradece. El cajero confirma el canje físico con el botón de la caja.</div>
+  </div>
+
+  <!-- 6 -->
+  <h2><span class="n">6</span> Orden para configurar rápido</h2>
+  <div class="panel">
+    <p>1. Crear los 7 campos personalizados (sección 1).</p>
+    <p>2. Crear el Workflow 2 "FIDELIZATE · Seguimientos" (Re-Entry + remove-on-re-entry ON) con los Wait 15/30/60/90.</p>
+    <p>3. Crear el Workflow 1 "FIDELIZATE · Actualización de datos" (sección 3); en el paso ⑦, Add to Workflow → Seguimientos.</p>
+    <p>4. Publicar ambos.</p>
+    <p>5. Desde FIDELIZATE → caja, registrar una compra de prueba y ver el contacto actualizarse + entrar a Seguimientos.</p>
+    <div class="note">Re-selecciona el <b>reference payload</b> del Inbound Webhook si apunta a un ejemplo viejo: manda una compra de prueba, "Check for new requests", y elige el request que ya trae <code>loyaltyStage</code> / <code>isNewCustomer</code>.</div>
+  </div>
+
+  <footer>
+    FIDELIZATE · documento de configuración GHL. Los nombres de campo y el payload deben coincidir con <code>lib/sales.ts</code> / <code>lib/ghl.ts</code>. Mensajes editables a tu gusto.
+  </footer>
+</div>
+<script>
+  document.querySelectorAll('.copy').forEach(b=>{
+    b.addEventListener('click',()=>{
+      navigator.clipboard.writeText(b.dataset.c);
+      const o=b.textContent;b.textContent='copiado ✓';
+      setTimeout(()=>b.textContent=o,1100);
+    });
+  });
+</script>
+</body>
+</html>

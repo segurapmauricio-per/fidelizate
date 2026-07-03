@@ -1,0 +1,112 @@
+// FIDELIZATE - schema canonico. No renombrar campos sin actualizar INSTRUCCIONES-CURSOR.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") // pooled (runtime) en Supabase
+  directUrl = env("DIRECT_URL")   // direct (migraciones) en Supabase
+}
+
+enum Role {
+  SUPER_ADMIN
+  MANAGER
+  CASHIER
+}
+
+enum TokenType {
+  PASSWORD_RESET
+  EMAIL_VERIFY
+}
+
+model Business {
+  id                    String     @id @default(cuid())
+  name                  String
+  slug                  String     @unique
+  logoUrl               String?
+  primaryColor          String     @default("#e63946")
+  rewardAt              Int        @default(10)
+  ghlPurchaseWebhookUrl String?
+  ghlRedeemWebhookUrl   String?
+  isActive              Boolean    @default(true)
+  deactivatedAt         DateTime?
+  users                 User[]
+  customers             Customer[]
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+}
+
+model User {
+  id                 String              @id @default(cuid())
+  email              String              @unique
+  name               String?
+  passwordHash       String?
+  googleId           String?             @unique
+  role               Role                @default(CASHIER)
+  emailVerified      DateTime?
+  mustChangePassword Boolean             @default(false)
+  isActive           Boolean             @default(true)
+  deactivatedAt      DateTime?
+  business           Business            @relation(fields: [businessId], references: [id])
+  businessId         String
+  sales              Sale[]
+  tokens             VerificationToken[]
+  lastLoginAt        DateTime?
+  createdAt          DateTime            @default(now())
+}
+
+model VerificationToken {
+  id        String    @id @default(cuid())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  type      TokenType
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model Customer {
+  id           String   @id @default(cuid())
+  business     Business @relation(fields: [businessId], references: [id])
+  businessId   String
+  rut          String
+  name         String
+  email        String?
+  phone        String?
+  stampCount      Int      @default(0)
+  totalStamps     Int      @default(0)
+  lastPurchaseAt  DateTime?
+  rewardPending   Boolean  @default(false)
+  rewardsEarned   Int      @default(0)
+  rewardsRedeemed Int      @default(0)
+  lastRedeemedAt  DateTime?
+  ghlContactId    String?
+  isActive        Boolean  @default(true)
+  deactivatedAt   DateTime?
+  sales         Sale[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([businessId, rut])
+  @@index([businessId])
+}
+
+model Sale {
+  id              String   @id @default(cuid())
+  customer        Customer @relation(fields: [customerId], references: [id])
+  customerId      String
+  cashier         User     @relation(fields: [cashierId], references: [id])
+  cashierId       String
+  stampAfter      Int
+  rewardTriggered Boolean  @default(false)
+  ghlSynced       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  @@index([customerId])
+  @@index([createdAt])
+}

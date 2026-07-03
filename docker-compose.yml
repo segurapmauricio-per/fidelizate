@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-fidelizate}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fidelizate}
+      POSTGRES_DB: ${POSTGRES_DB:-fidelizate}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # Descomentar para correr la app en contenedor (produccion / VPS).
+  # En local conviene usar `pnpm dev` y solo `db` en docker.
+  # app:
+  #   build: .
+  #   restart: unless-stopped
+  #   env_file: .env
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - db
+
+volumes:
+  pgdata:
